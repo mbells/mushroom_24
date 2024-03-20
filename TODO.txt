@@ -1,0 +1,15 @@
+
+- implement animation in the color domain
+- fix up string definition
+- create string definitions, with 4 and 6 crosses
+- add 2 energy sources
+- allow source control from keyboard
+    - initial impluse when touch changes (both low and high)
+    - constant pulses afterwards at a given frequency
+- implement crosses: allow wave to affect both channels by tying 2 points together
+- lower attenuation when both inputs are touched
+- implement magical synergy effect: 2 waves interact and create a spontaneous pulse in 3rd color domain
+
+## Arduino
+- convert to int arithmetic
+- create Arduino sketch

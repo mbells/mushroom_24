@@ -1,6 +1,12 @@
+# Mushroom and mycelium art installation
 
+License: BSD-3-Clause, See [LICENSE.txt](LICENSE.txt) for details.
 
-Install:
+This is an art installation of a mushroom where the mycelium is represented by animated LEDs.
+
+The patterns in these is controlled by simulating the one dimensional wave equation. A few hacks are added when the light string crosses and well as to create a "magical synergy" effect.
+
+## Install
 
   #pip install uv
   curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -11,7 +17,7 @@ Install:
 Setup:
   source .venv/bin/activate
 
-# Theory
+## Theory
 
 The one dimentional wave equation can be expressed as the following partial differential equation (PDE):
 $$
@@ -30,7 +36,7 @@ $$
 
 where $ s = { {\Delta t^2} \over {\Delta x^2} } $
 
-## References:
+## References
 - https://en.wikipedia.org/wiki/Wave_equation
 - https://en.wikipedia.org/wiki/One-way_wave_equation
 - https://github.com/sachabinder/wave_equation_simulations
@@ -40,3 +46,4 @@ https://youtu.be/ub7lok-JQJE?si=m7lACwPuZIUp8yYd
 https://youtu.be/CAT2xSaC7UY?si=k2UHA9f9prlaK0XG
 - Great explanation of numerical solution:
 https://youtu.be/CAT2xSaC7UY?si=ZMJdObqhATR0KMwG
+- https://en.wikipedia.org/wiki/Mycelium
