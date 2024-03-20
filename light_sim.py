@@ -9,6 +9,10 @@ width = 1000
 height = 250
 num_channels = 3
 
+# 12 ft wide, 10 used (120 in)
+# 28 in high
+# cable: 16 ft ea, *2 sections
+
 num_points = 280
 ctr_pts = np.array(
     [
