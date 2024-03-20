@@ -2,14 +2,16 @@
 
 import numpy as np
 import cv2
+import math
 
 # Parameters
 num_points = 280
 num_steps = 1000
-velocity = 0.1  # Velocity of the wave
+velocity = 0.2  # Velocity of the wave
 time_step = 1  # Time step
 x_step = 1
 damping_factor = 0.001  # Damping factor
+source_freq = 1/100
 
 width = 1000
 height = 250
@@ -22,8 +24,8 @@ u = np.zeros(num_points)  # Initial displacement
 u_1 = np.zeros(num_points)  # Last step (u[t-1])
 u_next = np.zeros(num_points)  # Next step, used temporarily
 
-
-u[int(num_points / 2)] = 1.0  # Initial impulse
+source_0 = int(num_points / 2)
+u[source_0] = 1.0  # Initial impulse
 
 rsq=(velocity*time_step/x_step)**2
 
@@ -39,11 +41,11 @@ for step in range(num_steps):
     u[-1] = 0
 """
 
-def update_wave():
+def update_wave(step):
     # Update displacement using wave equation
     #u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
 
-    global u, u_1, u_next
+    global u, u_1, u_next, source_freq
 
     for a in range(1, len(u)-1):
         u_next[a] = 2*(1-rsq)*u[a]-u_1[a]+rsq*(u[a-1]+u[a+1])
@@ -57,6 +59,14 @@ def update_wave():
     # Boundary conditions (fixed ends)
     u[0] = 0
     u[-1] = 0
+
+    #if np.isclose(u[source_0], 0, atol=0.01):
+    """
+    if step % 100 == 0:
+        u[source_0] = 1.0  # Repeat pulse
+        print("pulse")
+    """
+    u[source_0] = math.sin(2*math.pi*step*source_freq)
 
 def update_wave_vec(u):
     """Vectorized version of update.
@@ -98,7 +108,7 @@ for step in range(num_steps):
     #print(f"===== {step}")
     #if step == 1:
     #    print(u)
-    update_wave()
+    update_wave(step)
     draw(img, u)
     cv2.imshow("lights", img)
     if cv2.waitKey(1) == ord('q'):
