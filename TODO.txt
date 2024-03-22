@@ -1,11 +1,8 @@
 
-- implement animation in the color domain
-- add 2 energy sources
 - allow source control from keyboard
     - initial impluse when touch changes (both low and high)
-    - constant pulses afterwards at a given frequency
-- lower attenuation when both inputs are touched
 - implement magical synergy effect: 2 waves interact and create a spontaneous pulse in 3rd color domain
+- split simuation so can more easily be hooked into light string
 
 ## Arduino
 - convert to int arithmetic
