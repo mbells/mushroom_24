@@ -78,9 +78,10 @@ lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
 
 
 def light_waves(lights, wave0, wave1, wave2):
-    r = np.clip(100 + 200 * wave0.u, 0, 255)
-    g = np.clip(100 + 200 * wave1.u, 0, 255)
-    b = np.clip(100 + 200 * wave2.u, 0, 255)
+    boost = 100 * wave2.u
+    r = np.clip(50 + 150 * wave0.u + boost, 0, 255)
+    g = np.clip(50 + 150 * wave1.u + boost, 0, 255)
+    b = np.clip(50 + 150 * wave2.u + boost, 0, 255)
     lights[..., 0] = b
     lights[..., 1] = g
     lights[..., 2] = r
@@ -130,11 +131,23 @@ def main():
 
     t = 0
     while True:
+        # Upadate simulation state
         t += 1
+
+        for i in range(num_points):
+            if wave0.u[i] + wave1.u[i] > 1.4:
+                wave2.u[1] = 1
+                print(f"wave2 up at {i}")
+            elif wave0.u[i] + wave1.u[i] < -1.4:
+                wave2.u[1] = -1
+                print(f"wave2 down at {i}")
+
         wave0.update_wave(t)
         wave1.update_wave(t)
         wave2.update_wave(t)
         light_waves(lights, wave0, wave1, wave2)
+
+        # Draw
         img *= 0
         lightssim.draw(img, lights)
 
@@ -147,6 +160,7 @@ def main():
 
         cv2.imshow("lights", img)
 
+        # Respond to input
         key = cv2.waitKey(1)
         if key == ord("q"):
             cv2.destroyAllWindows()

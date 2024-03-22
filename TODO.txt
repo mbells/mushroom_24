@@ -1,7 +1,6 @@
 
 - allow source control from keyboard
     - initial impluse when touch changes (both low and high)
-- implement magical synergy effect: 2 waves interact and create a spontaneous pulse in 3rd color domain
 - split simuation so can more easily be hooked into light string
 
 ## Arduino
