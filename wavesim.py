@@ -5,7 +5,7 @@ import cv2
 import math
 
 # Parameters
-num_points = 280
+num_points = 140
 num_steps = 1000
 velocity = 0.2  # Velocity of the wave
 time_step = 1  # Time step
@@ -17,6 +17,14 @@ width = 1000
 height = 250
 num_channels = 3
 
+crossed_points=[]
+crossed_points=[(40, 100)]
+
+#source_0 = int(num_points / 2)
+source_0 = 0
+
+#u[source_0] = 1.0  # Initial impulse
+
 
 # Initial conditions
 x = np.arange(num_points)
@@ -24,22 +32,9 @@ u = np.zeros(num_points)  # Initial displacement
 u_1 = np.zeros(num_points)  # Last step (u[t-1])
 u_next = np.zeros(num_points)  # Next step, used temporarily
 
-source_0 = int(num_points / 2)
-u[source_0] = 1.0  # Initial impulse
 
 rsq=(velocity*time_step/x_step)**2
 
-"""
-# Simulation
-for step in range(num_steps):
-    # Update displacement using wave equation
-    u[1:-1] += velocity**2 * time_step**2 * (u[:-2] - 2 * u[1:-1] + u[2:])
-    # Apply damping
-    u *= 1 - damping_factor * time_step
-    # Boundary conditions (fixed ends)
-    u[0] = 0
-    u[-1] = 0
-"""
 
 def update_wave(step):
     # Update displacement using wave equation
@@ -59,6 +54,11 @@ def update_wave(step):
     # Boundary conditions (fixed ends)
     u[0] = 0
     u[-1] = 0
+
+    # When crosses are defined, these affect each other:
+    for a,b in crossed_points:
+        avg = np.mean([u[a], u[b]])
+        u[a] = u[b] = avg
 
     #if np.isclose(u[source_0], 0, atol=0.01):
     """
@@ -98,8 +98,7 @@ def update_wave_vec(u):
 def draw(img, u):
     img *= 0
     for i in range(num_points):
-        x, y = np.intp((4*i, 100*u[i]))
-        #print("x,y=", x, y)
+        x, y = np.intp((4*i, 100*u[i] + height/2))
         cv2.circle(img, (x, y), radius=4, color=(0, 0, 255), thickness=-1)
 
 
