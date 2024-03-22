@@ -1,7 +1,5 @@
 
 - implement animation in the color domain
-- fix up string definition
-- create string definitions, with 4 and 6 crosses
 - add 2 energy sources
 - allow source control from keyboard
     - initial impluse when touch changes (both low and high)
