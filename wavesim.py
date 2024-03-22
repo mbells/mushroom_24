@@ -25,91 +25,106 @@ source_0 = 0
 
 #u[source_0] = 1.0  # Initial impulse
 
+class WaveSim:
+    def __init__(self):
+        # Initial conditions
+        self.x = np.arange(num_points)
+        self.u = np.zeros(num_points)  # Initial displacement
+        self.u_1 = np.zeros(num_points)  # Last step (u[t-1])
+        self.u_next = np.zeros(num_points)  # Next step, used temporarily
 
-# Initial conditions
-x = np.arange(num_points)
-u = np.zeros(num_points)  # Initial displacement
-u_1 = np.zeros(num_points)  # Last step (u[t-1])
-u_next = np.zeros(num_points)  # Next step, used temporarily
+        self.rsq=(velocity*time_step/x_step)**2
 
 
-rsq=(velocity*time_step/x_step)**2
+    def update_wave(self, step):
+        # Update displacement using wave equation
+        #u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
 
+        #global u, u_1, u_next, source_freq
+        u = self.u
+        u_next = self.u_next
+        u_1 = self.u_1
+        rsq = self.rsq
 
-def update_wave(step):
-    # Update displacement using wave equation
-    #u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
+        for a in range(1, len(u)-1):
+            u_next[a] = 2*(1-rsq)*u[a]-u_1[a]+rsq*(u[a-1]+u[a+1])
 
-    global u, u_1, u_next, source_freq
-
-    for a in range(1, len(u)-1):
-        u_next[a] = 2*(1-rsq)*u[a]-u_1[a]+rsq*(u[a-1]+u[a+1])
         # Rotate; `next` will be overwritten but this avoids memory allocation
+        u, u_1, u_next = u_next, u, u_1
 
-    u, u_1, u_next = u_next, u, u_1
-    np.clip(u, -1, 1, out=u)
-    
-    # Apply damping
-    u *= 1 - damping_factor * time_step
-    # Boundary conditions (fixed ends)
-    u[0] = 0
-    u[-1] = 0
+        # Copy state to members
+        self.u, self.u_1, self.u_next = u, u_1, u_next
 
-    # When crosses are defined, these affect each other:
-    for a,b in crossed_points:
-        avg = np.mean([u[a], u[b]])
-        u[a] = u[b] = avg
-
-    #if np.isclose(u[source_0], 0, atol=0.01):
-    """
-    if step % 100 == 0:
-        u[source_0] = 1.0  # Repeat pulse
-        print("pulse")
-    """
-    u[source_0] = math.sin(2*math.pi*step*source_freq)
-
-def update_wave_vec(u):
-    """Vectorized version of update.
-    Doesn't work yet...
-    """
-    rsq = velocity**2 * time_step**2
-    # Update displacement using wave equation
-    u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
+        np.clip(u, -1, 1, out=u)
 
 
-    # Refactoring   
-    tmp = u
-    u += 2*(1-rsq)*u[a] - u1[a] + rsq*(u[a-1]+u[a+1])
+        # Apply damping
+        u *= 1 - damping_factor * time_step
+        # Boundary conditions (fixed ends)
+        u[0] = 0
+        u[-1] = 0
 
-    u += 2*u[a] - 2*rsq*u[a] + rsq*(u[a-1]+u[a+1])  - u1[a]
+        # When crosses are defined, these affect each other:
+        for a,b in crossed_points:
+            avg = np.mean([u[a], u[b]])
+            u[a] = u[b] = avg
 
-    u1 = tmp
-    #u1, u = u, tmp
+        #if np.isclose(u[source_0], 0, atol=0.01):
+        """
+        if step % 100 == 0:
+            u[source_0] = 1.0  # Repeat pulse
+            print("pulse")
+        """
+        u[source_0] = math.sin(2*math.pi*step*source_freq)
+
+    def update_wave_vec(self, step):
+        """Vectorized version of update.
+        Doesn't work yet...
+        """
+        rsq = velocity**2 * time_step**2
+        # Update displacement using wave equation
+        u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
+
+
+        # Refactoring   
+        tmp = u
+        u += 2*(1-rsq)*u[a] - u1[a] + rsq*(u[a-1]+u[a+1])
+
+        u += 2*u[a] - 2*rsq*u[a] + rsq*(u[a-1]+u[a+1])  - u1[a]
+
+        u1 = tmp
+        #u1, u = u, tmp
 
 
 
-    # Apply damping
-    u *= 1 - damping_factor * time_step
-    # Boundary conditions (fixed ends)
-    u[0] = 0
-    u[-1] = 0
+        # Apply damping
+        u *= 1 - damping_factor * time_step
+        # Boundary conditions (fixed ends)
+        u[0] = 0
+        u[-1] = 0
 
 
-def draw(img, u):
-    img *= 0
-    for i in range(num_points):
-        x, y = np.intp((4*i, 100*u[i] + height/2))
-        cv2.circle(img, (x, y), radius=4, color=(0, 0, 255), thickness=-1)
+    def draw(self, img):
+        img *= 0
+        for i in range(num_points):
+            x, y = np.intp((4*i, 100*self.u[i] + height/2))
+            cv2.circle(img, (x, y), radius=4, color=(0, 0, 255), thickness=-1)
 
 
-img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
-for step in range(num_steps):
-    #print(f"===== {step}")
-    #if step == 1:
-    #    print(u)
-    update_wave(step)
-    draw(img, u)
-    cv2.imshow("lights", img)
-    if cv2.waitKey(1) == ord('q'):
-        cv2.destroyAllWindows()
-        break
+
+def main():
+    wavesim = WaveSim()
+    img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
+    for step in range(num_steps):
+        #print(f"===== {step}")
+        #if step == 1:
+        #    print(u)
+        wavesim.update_wave(step)
+        wavesim.draw(img)
+        cv2.imshow("lights", img)
+        if cv2.waitKey(1) == ord('q'):
+            cv2.destroyAllWindows()
+            break
+
+if __name__ == "__main__":
+    main()
