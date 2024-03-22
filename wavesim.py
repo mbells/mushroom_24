@@ -23,10 +23,10 @@ crossed_points=[(40, 100)]
 #source_0 = int(num_points / 2)
 source_0 = 0
 
-#u[source_0] = 1.0  # Initial impulse
-
 class WaveSim:
-    def __init__(self):
+    def __init__(self, num_points, source=0):
+        self.num_points = num_points
+        self.source = source
         # Initial conditions
         self.x = np.arange(num_points)
         self.u = np.zeros(num_points)  # Initial displacement
@@ -49,33 +49,31 @@ class WaveSim:
         for a in range(1, len(u)-1):
             u_next[a] = 2*(1-rsq)*u[a]-u_1[a]+rsq*(u[a-1]+u[a+1])
 
-        # Rotate; `next` will be overwritten but this avoids memory allocation
-        u, u_1, u_next = u_next, u, u_1
-
-        # Copy state to members
-        self.u, self.u_1, self.u_next = u, u_1, u_next
-
-        np.clip(u, -1, 1, out=u)
-
+        np.clip(u_next, -1, 1, out=u_next)
 
         # Apply damping
-        u *= 1 - damping_factor * time_step
+        u_next *= 1 - damping_factor * time_step
         # Boundary conditions (fixed ends)
-        u[0] = 0
-        u[-1] = 0
+        u_next[0] = 0
+        u_next[-1] = 0
 
         # When crosses are defined, these affect each other:
         for a,b in crossed_points:
-            avg = np.mean([u[a], u[b]])
-            u[a] = u[b] = avg
+            avg = np.mean([u_next[a], u_next[b]])
+            u_next[a] = u_next[b] = avg
 
-        #if np.isclose(u[source_0], 0, atol=0.01):
+        #if np.isclose(u[self.source], 0, atol=0.01):
         """
         if step % 100 == 0:
-            u[source_0] = 1.0  # Repeat pulse
+            u_next[self.source] = 1.0  # Repeat pulse
             print("pulse")
         """
-        u[source_0] = math.sin(2*math.pi*step*source_freq)
+        u_next[self.source] = math.sin(2*math.pi*step*source_freq)
+
+        # Rotate; `next` will be overwritten but this avoids memory allocation
+        u, u_1, u_next = u_next, u, u_1
+        # Copy state to members
+        self.u, self.u_1, self.u_next = u, u_1, u_next
 
     def update_wave_vec(self, step):
         """Vectorized version of update.
@@ -106,14 +104,14 @@ class WaveSim:
 
     def draw(self, img):
         img *= 0
-        for i in range(num_points):
+        for i in range(self.num_points):
             x, y = np.intp((4*i, 100*self.u[i] + height/2))
             cv2.circle(img, (x, y), radius=4, color=(0, 0, 255), thickness=-1)
 
 
 
 def main():
-    wavesim = WaveSim()
+    wavesim = WaveSim(num_points, source=source_0)
     img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
     for step in range(num_steps):
         #print(f"===== {step}")
