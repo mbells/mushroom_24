@@ -37,11 +37,11 @@ lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
 
 
 def light_waves(lights, wave0, wave1, wave2):
-    boost = 0  # 100 * wave2.u
+    background = 150 * wave2.u
     # wave2.u *=0
-    r = np.clip(0 + 150 * wave0.u + boost, 0, 255)
-    g = np.clip(0 + 150 * wave1.u + boost, 0, 255)
-    b = np.clip(0 + 150 * wave2.u + boost, 0, 255)
+    r = np.clip(0 + 150 * wave0.u + background, 0, 255)
+    g = np.clip(0 + 150 * wave1.u + background, 0, 255)
+    b = np.clip(0 + 150 * wave2.u + background, 0, 255)
     lights[..., 0] = b
     lights[..., 1] = g
     lights[..., 2] = r
@@ -95,6 +95,11 @@ def main():
     wave1 = wavesim.WaveSim(num_points, source=source_1, crossed_points=crossed_points)
     wave2 = wavesim.WaveSim(num_points, crossed_points=crossed_points)
     sparkle = Sparkle(num_points)
+
+    # Background wave
+    wave2.damping_factor = 0
+    wave2.u[1] = wave2.u[2] = wave2.u[num_points-2] = wave2.u[num_points-3] = 1
+    wave2.set_velocity(0.1)
 
     locator = None
 

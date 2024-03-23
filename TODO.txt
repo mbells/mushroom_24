@@ -1,7 +1,5 @@
 
-- allow source control from keyboard
-    - initial impluse when touch changes (both low and high)
-- split simuation so can more easily be hooked into light string
+- initial impluse when touch changes (both low and high)
 
 ## Arduino
 - convert to int arithmetic

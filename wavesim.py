@@ -6,7 +6,7 @@ import math
 
 # Parameters
 num_points = 280
-velocity = 0.1  # Velocity of the wave
+cfg_velocity = 0.2  # Velocity of the wave
 time_step = 1  # Time step
 x_step = 1
 cfg_damping_factor = 0.0001  # Damping factor
@@ -36,7 +36,8 @@ class WaveSim:
         self.u_1 = np.zeros(num_points)  # Last step (u[t-1])
         self.u_next = np.zeros(num_points)  # Next step, used temporarily
 
-        self.rsq = (velocity * time_step / x_step) ** 2
+        self.velocity = cfg_velocity
+        self.rsq = (self.velocity * time_step / x_step) ** 2
         self.source_active = False
         self.damping_factor = cfg_damping_factor
 
@@ -84,7 +85,7 @@ class WaveSim:
         """Vectorized version of update.
         Doesn't work yet...
         """
-        rsq = velocity**2 * time_step**2
+        rsq = self.rsq
         # Update displacement using wave equation
         u[1:-1] += rsq * (u[:-2] - 2 * u[1:-1] + u[2:])
 
@@ -107,6 +108,10 @@ class WaveSim:
         for i in range(self.num_points):
             x, y = np.intp((4 * i, 100 * self.u[i] + height / 2))
             cv2.circle(img, (x, y), radius=4, color=(0, 0, 255), thickness=-1)
+
+    def set_velocity(self, velocity):
+        self.velocity = velocity
+        self.rsq = (self.velocity * time_step / x_step) ** 2
 
 
 def main():
