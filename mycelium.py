@@ -54,8 +54,10 @@ class Sparkle:
         self.sparkles = np.zeros(num_points)
 
     def update_lights(self, lights, wave0, wave1, wave2):
+        # Fade existing ones
+        self.sparkles -= 0.1
+        # Add new ones
         triggers = wave0.u + wave1.u >= 1.4
-        self.sparkles -= 0.2
         self.sparkles[triggers] = 1
         self.sparkles = np.clip(self.sparkles, 0, 1)
         triggers = np.where(self.sparkles)[0]
@@ -69,7 +71,8 @@ class Sparkle:
                 np.clip(i + np.random.normal(scale=3), 0, self.num_points - 1)
             )
             #print(f"{flash=}")
-            lights[flash] =  np.array((255,255,255))
+            intensity = self.sparkles[i]
+            lights[flash] =  np.array((255,255,255)) - (1-intensity)
         
 
 def move_locator(locator, amount):
