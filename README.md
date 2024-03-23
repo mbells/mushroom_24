@@ -19,7 +19,7 @@ Setup:
 
 ## Use
 
-Run: `python light_sim.py`
+Run: `python mycelium.py`
 
 Keys:
 - 'q': quits

@@ -1,27 +1,21 @@
 #!/usr/bin/env python3
+"""
+Simulate a string of LEDs on the screen.
+
+Meant to be called from mycelium.
+"""
 
 import cv2
 import numpy as np
 
 from scipy import interpolate
 
-import wavesim
 
 width = 1000
 height = 250
 num_channels = 3
-
-# 12 ft wide, 10 used (120 in)
-# 28 in high
-# cable: 16 ft ea, *2 sections
-
-
 num_points = 280
-source_0 = 0
-source_1 = num_points - 1
-DAMPING_HIGH = 0.005
-DAMPING_MED = 0.001
-DAMPING_LOW = 0.0001
+
 
 lightstring_original = np.array(
     [
@@ -66,31 +60,30 @@ lightstring_simple_2 = np.array(
 )
 crossed_points_simple_2 = [(70, 210)]
 
-source_0 = 0
-source_1 = 140
-
-ctr_pts = lightstring_original
-crossed_points = crossed_points_original
-# ctr_pts = lightstring_simple_2
-# crossed_points = crossed_points_simple_2
-
-lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
-
-
-def light_waves(lights, wave0, wave1, wave2):
-    boost = 0 # 100 * wave2.u
-    #wave2.u *=0
-    r = np.clip(0 + 150 * wave0.u + boost, 0, 255)
-    g = np.clip(0 + 150 * wave1.u + boost, 0, 255)
-    b = np.clip(0 + 150 * wave2.u + boost, 0, 255)
-    lights[..., 0] = b
-    lights[..., 1] = g
-    lights[..., 2] = r
-
 
 class LightsSim:
     def __init__(self, ctr_pts, num_points):
         (self.lights_x, self.lights_y) = self.interpolate_points(ctr_pts, num_points)
+
+        self.img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
+
+    def destroy(self):
+        cv2.destroyAllWindows()
+
+    def draw(self, lights, locator):
+        self.img *= 0
+
+        for i in range(num_points):
+            x, y = np.intp((self.lights_x[i], height - self.lights_y[i]))
+            c = lights[i].tolist()
+            cv2.circle(self.img, (x, y), radius=4, color=c, thickness=-1)
+
+        if locator is not None:
+            x, y = np.intp((self.lights_x[locator], height - self.lights_y[locator]))
+            # print(x,y)
+            cv2.circle(iself.mg, (x, y), radius=6, color=(255, 255, 255), thickness=2)
+
+        cv2.imshow("lights", self.img)
 
     def interpolate_points(self, control_pts, num_points):
         x = control_pts[:, 0]
@@ -100,34 +93,18 @@ class LightsSim:
         out = interpolate.splev(u, tck)
         return out
 
-    def draw(self, img, lights):
-        for i in range(num_points):
-            x, y = np.intp((self.lights_x[i], height - self.lights_y[i]))
-            c = lights[i].tolist()
-            cv2.circle(img, (x, y), radius=4, color=c, thickness=-1)
+    def read_key(self):
+        return cv2.waitKey(1)
 
-class Sparkle:
-    def __init__(self, num_points):
-        #self.sources = 
-        self.num_points = num_points
-        self.sparkles = np.zeros(num_points)
 
-    def update_lights(self, lights, wave0, wave1, wave2):
-        triggers = wave0.u + wave1.u >= 1.4
-        self.sparkles -= 0.2
-        self.sparkles[triggers] = 1
-        self.sparkles = np.clip(self.sparkles, 0, 1)
-        triggers = np.where(self.sparkles)[0]
-        #sparkles = self.sparkles
-        #if triggers.size > 0:
-        #    print("triggers", triggers)
+# -------------- old
 
-        #self.sparkles *= 0
-        for i in triggers:
-            flash = np.intp(np.clip(i + np.random.normal(scale=3), 0, self.num_points-1))
-            #print(f"{flash=}")
-            lights[flash] =  np.array((255,255,255))
-        
+
+ctr_pts = lightstring_original
+# crossed_points = crossed_points_original
+# ctr_pts = lightstring_simple_2
+# crossed_points = crossed_points_simple_2
+
 
 def move_locator(locator, amount):
     if locator is None:
@@ -145,12 +122,7 @@ def main():
 
     lightssim = LightsSim(ctr_pts, num_points)
 
-    wave0 = wavesim.WaveSim(num_points, source=source_0, crossed_points=crossed_points)
-    wave1 = wavesim.WaveSim(num_points, source=source_1, crossed_points=crossed_points)
-    wave2 = wavesim.WaveSim(num_points, crossed_points=crossed_points)
-    sparkle = Sparkle(num_points)
-
-    img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
+    lights = np.full((num_points, num_channels), (100, 100, 100), dtype=np.uint8)
     locator = None
 
     t = 0
@@ -158,36 +130,16 @@ def main():
         # Upadate simulation state
         t += 1
 
-        #wave2.u = np.clip(-wave0.u - wave1.u, -1, 0)
-        
-        wave0.update_wave(t)
-        wave1.update_wave(t)
-        wave2.update_wave(t)
-        light_waves(lights, wave0, wave1, wave2)
-        sparkle.update_lights(lights, wave0, wave1, wave2)
+        # wave2.u = np.clip(-wave0.u - wave1.u, -1, 0)
 
-        # Draw
-        img *= 0
-        lightssim.draw(img, lights)
-
-        if locator is not None:
-            x, y = np.intp(
-                (lightssim.lights_x[locator], height - lightssim.lights_y[locator])
-            )
-            # print(x,y)
-            cv2.circle(img, (x, y), radius=6, color=(255, 255, 255), thickness=2)
-
-        cv2.imshow("lights", img)
+        # Draw everything simulated
+        lightssim.draw(lights, locator)
 
         # Respond to input
         key = cv2.waitKey(1)
         if key == ord("q"):
             cv2.destroyAllWindows()
             break
-        elif key == ord("1"):
-            wave0.source_active = not wave0.source_active
-        elif key == ord("2"):
-            wave1.source_active = not wave1.source_active
         elif key == ord("l"):
             print("locator")
             if locator is None:
@@ -206,17 +158,6 @@ def main():
             locator = move_locator(locator, -10)
         else:
             print(f"Unknown key {key}")
-
-        # Adjust simulation parameters...
-        if wave0.source_active and wave1.source_active:
-            wave0.damping_factor = DAMPING_LOW
-            wave1.damping_factor = DAMPING_LOW
-        elif wave0.source_active or wave1.source_active:
-            wave0.damping_factor = DAMPING_MED
-            wave1.damping_factor = DAMPING_MED
-        else:
-            wave0.damping_factor = DAMPING_HIGH
-            wave1.damping_factor = DAMPING_HIGH
 
 
 if __name__ == "__main__":

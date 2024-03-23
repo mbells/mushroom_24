@@ -17,8 +17,8 @@ height = 250
 num_channels = 3
 
 crossed_points = []
-#crossed_points = [(40, 100)]
-#crossed_points = [(119, 214)]
+# crossed_points = [(40, 100)]
+# crossed_points = [(119, 214)]
 
 # source_0 = int(num_points / 2)
 source_0 = 0
