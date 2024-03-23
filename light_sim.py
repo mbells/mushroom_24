@@ -78,10 +78,11 @@ lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
 
 
 def light_waves(lights, wave0, wave1, wave2):
-    boost = 100 * wave2.u
-    r = np.clip(50 + 150 * wave0.u + boost, 0, 255)
-    g = np.clip(50 + 150 * wave1.u + boost, 0, 255)
-    b = np.clip(50 + 150 * wave2.u + boost, 0, 255)
+    boost = 0 # 100 * wave2.u
+    #wave2.u *=0
+    r = np.clip(0 + 150 * wave0.u + boost, 0, 255)
+    g = np.clip(0 + 150 * wave1.u + boost, 0, 255)
+    b = np.clip(0 + 150 * wave2.u + boost, 0, 255)
     lights[..., 0] = b
     lights[..., 1] = g
     lights[..., 2] = r
@@ -105,6 +106,28 @@ class LightsSim:
             c = lights[i].tolist()
             cv2.circle(img, (x, y), radius=4, color=c, thickness=-1)
 
+class Sparkle:
+    def __init__(self, num_points):
+        #self.sources = 
+        self.num_points = num_points
+        self.sparkles = np.zeros(num_points)
+
+    def update_lights(self, lights, wave0, wave1, wave2):
+        triggers = wave0.u + wave1.u >= 1.4
+        self.sparkles -= 0.2
+        self.sparkles[triggers] = 1
+        self.sparkles = np.clip(self.sparkles, 0, 1)
+        triggers = np.where(self.sparkles)[0]
+        #sparkles = self.sparkles
+        #if triggers.size > 0:
+        #    print("triggers", triggers)
+
+        #self.sparkles *= 0
+        for i in triggers:
+            flash = np.intp(np.clip(i + np.random.normal(scale=3), 0, self.num_points-1))
+            #print(f"{flash=}")
+            lights[flash] =  np.array((255,255,255))
+        
 
 def move_locator(locator, amount):
     if locator is None:
@@ -125,6 +148,7 @@ def main():
     wave0 = wavesim.WaveSim(num_points, source=source_0, crossed_points=crossed_points)
     wave1 = wavesim.WaveSim(num_points, source=source_1, crossed_points=crossed_points)
     wave2 = wavesim.WaveSim(num_points, crossed_points=crossed_points)
+    sparkle = Sparkle(num_points)
 
     img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
     locator = None
@@ -134,18 +158,13 @@ def main():
         # Upadate simulation state
         t += 1
 
-        for i in range(num_points):
-            if wave0.u[i] + wave1.u[i] > 1.4:
-                wave2.u[1] = 1
-                print(f"wave2 up at {i}")
-            elif wave0.u[i] + wave1.u[i] < -1.4:
-                wave2.u[1] = -1
-                print(f"wave2 down at {i}")
-
+        #wave2.u = np.clip(-wave0.u - wave1.u, -1, 0)
+        
         wave0.update_wave(t)
         wave1.update_wave(t)
         wave2.update_wave(t)
         light_waves(lights, wave0, wave1, wave2)
+        sparkle.update_lights(lights, wave0, wave1, wave2)
 
         # Draw
         img *= 0

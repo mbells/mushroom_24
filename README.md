@@ -17,6 +17,17 @@ The patterns in these is controlled by simulating the one dimensional wave equat
 Setup:
   source .venv/bin/activate
 
+## Use
+
+Run: `python light_sim.py`
+
+Keys:
+- 'q': quits
+- '1': toggles input 1
+- '2': toggles input 2
+- 'l': toggles light locator
+- Up, Down, PgUp, PgDown: move the locator
+
 ## Theory
 
 The one dimentional wave equation can be expressed as the following partial differential equation (PDE):
