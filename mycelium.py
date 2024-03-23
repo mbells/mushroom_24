@@ -5,10 +5,13 @@ The mycelium art display.
 Can be drawn on an LED string or on simulated on the display.
 """
 
+import argparse
 import numpy as np
 
+# This project
 import light_sim
 import wavesim
+from mycontroller import MyController
 
 
 # 12 ft wide, 10 used (120 in)
@@ -34,6 +37,19 @@ crossed_points = light_sim.crossed_points_original
 # crossed_points = light_sim.crossed_points_simple_2
 
 lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
+
+
+def args_parser():
+    parser = argparse.ArgumentParser(
+        # prog='mycelium',
+        description="Runs the mycelium art project.",
+        epilog="See https://github.com/mbells/mushroom_24",
+    )
+
+    parser.add_argument("target", type=str, choices=["sim", "cobs"])
+    # parser.add_argument('--sim', action='store_true')
+    # parser.add_argument('--cobs', action='store_true')
+    return parser.parse_args()
 
 
 def light_waves(lights, wave0, wave1, wave2):
@@ -70,10 +86,10 @@ class Sparkle:
             flash = np.intp(
                 np.clip(i + np.random.normal(scale=3), 0, self.num_points - 1)
             )
-            #print(f"{flash=}")
+            # print(f"{flash=}")
             intensity = self.sparkles[i]
-            lights[flash] =  np.array((255,255,255)) - (1-intensity)
-        
+            lights[flash] = np.array((255, 255, 255)) - (1 - intensity)
+
 
 def move_locator(locator, amount):
     if locator is None:
@@ -88,8 +104,13 @@ def move_locator(locator, amount):
 
 
 def main():
+    args = args_parser()
 
-    lightssim = light_sim.LightsSim(ctr_pts, num_points)
+    if args.target == "sim":
+        controller = light_sim.LightsSim(ctr_pts, num_points)
+    elif args.target == "cobs":
+        import forest_cobs
+        controller = forest_cobs.Lights(num_points)
 
     wave0 = wavesim.WaveSim(num_points, source=source_0, crossed_points=crossed_points)
     wave1 = wavesim.WaveSim(num_points, source=source_1, crossed_points=crossed_points)
@@ -98,7 +119,7 @@ def main():
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[num_points-2] = wave2.u[num_points-3] = 1
+    wave2.u[1] = wave2.u[2] = wave2.u[num_points - 2] = wave2.u[num_points - 3] = 1
     wave2.set_velocity(0.1)
 
     locator = None
@@ -117,17 +138,13 @@ def main():
         sparkle.update_lights(lights, wave0, wave1, wave2)
 
         # Draw everything simulated
-        lightssim.draw(lights, locator)
+        controller.draw(lights, locator)
 
         # Respond to input
-        key = lightssim.read_key()
+        key = controller.read_key()
         if key == ord("q"):
-            lightssim.destroy()
+            controller.destroy()
             break
-        elif key == ord("1"):
-            wave0.source_active = not wave0.source_active
-        elif key == ord("2"):
-            wave1.source_active = not wave1.source_active
         elif key == ord("l"):
             print("locator")
             if locator is None:
@@ -146,6 +163,10 @@ def main():
             locator = move_locator(locator, -10)
         else:
             print(f"Unknown key {key}")
+
+        inputs = controller.get_inputs()
+        wave0.source_active = inputs[0]
+        wave1.source_active = inputs[1]
 
         # Adjust simulation parameters...
         if wave0.source_active and wave1.source_active:

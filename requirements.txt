@@ -1,2 +1,4 @@
+cobs
 opencv-python
+pyserial
 scipy
