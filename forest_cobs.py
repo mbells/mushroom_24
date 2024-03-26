@@ -37,7 +37,7 @@ def set_pixel(pixel, color):
 
 ### Arduino interface ###
 
-arduino_serial = serial.Serial("COM5" if len(sys.argv) < 2 else sys.argv[1], 115200)
+arduino_serial = serial.Serial("COM5", 115200)
 
 
 def read_state(state):
@@ -135,12 +135,7 @@ class Lights(MyController):
 
 
     def read_key(self):
-        key = -1
-        is_key_pressed = not kbhit()
-        if is_key_pressed:
-            key = 'q'
-        
-        return key
+        return ord('q') if kbhit() else -1
 
 ### Main loop ###
 

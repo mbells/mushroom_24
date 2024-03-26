@@ -29,10 +29,11 @@ DAMPING_LOW = 0.0001
 num_channels = 3
 
 source_0 = 0
-source_1 = 140
+#source_1 = num_points / 2
 
 ctr_pts = light_sim.lightstring_original
-crossed_points = light_sim.crossed_points_original
+#crossed_points = light_sim.crossed_points_original
+crossed_points = []
 # ctr_pts = light_sim.lightstring_simple_2
 # crossed_points = light_sim.crossed_points_simple_2
 
@@ -165,8 +166,10 @@ def main():
             print(f"Unknown key {key}")
 
         inputs = controller.get_inputs()
-        wave0.source_active = inputs[0]
-        wave1.source_active = inputs[1]
+        if wave0.source_active != inputs[0] or wave1.source_active != inputs[1]:
+            print("input", inputs[0], inputs[1])
+            wave0.source_active = inputs[0]
+            wave1.source_active = inputs[1]
 
         # Adjust simulation parameters...
         if wave0.source_active and wave1.source_active:
