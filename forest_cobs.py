@@ -18,11 +18,12 @@ from cobs import cobs
 from msvcrt import kbhit
 
 # This project
+import myconfig
 from mycontroller import MyController
 
 ### LED strip buffer ###
 
-NUM_PIXELS = 140
+NUM_PIXELS = myconfig.NUM_POINTS
 
 buffer = bytearray(3 * NUM_PIXELS)
 

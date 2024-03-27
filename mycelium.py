@@ -10,6 +10,7 @@ import numpy as np
 
 # This project
 import light_sim
+import myconfig
 import wavesim
 from mycontroller import MyController
 
@@ -18,18 +19,13 @@ from mycontroller import MyController
 # 28 in high
 # cable: 16 ft ea, *2 sections
 
-
-num_points = 280
 source_0 = 0
-source_1 = num_points - 1
+source_1 = myconfig.NUM_POINTS - 1
 DAMPING_HIGH = 0.005
 DAMPING_MED = 0.001
 DAMPING_LOW = 0.0001
 
 num_channels = 3
-
-source_0 = 0
-#source_1 = num_points / 2
 
 ctr_pts = light_sim.lightstring_original
 #crossed_points = light_sim.crossed_points_original
@@ -37,7 +33,7 @@ crossed_points = []
 # ctr_pts = light_sim.lightstring_simple_2
 # crossed_points = light_sim.crossed_points_simple_2
 
-lights = np.full((num_points, num_channels), (0, 0, 0), dtype=np.uint8)
+lights = np.full((myconfig.NUM_POINTS, num_channels), (0, 0, 0), dtype=np.uint8)
 
 
 def args_parser():
@@ -97,9 +93,9 @@ def move_locator(locator, amount):
         return None
     locator += amount
     if locator < 0:
-        locator += num_points
-    if locator >= num_points:
-        locator -= num_points
+        locator += myconfig.NUM_POINTS
+    if locator >= myconfig.NUM_POINTS:
+        locator -= myconfig.NUM_POINTS
     print(locator)
     return locator
 
@@ -108,19 +104,19 @@ def main():
     args = args_parser()
 
     if args.target == "sim":
-        controller = light_sim.LightsSim(ctr_pts, num_points)
+        controller = light_sim.LightsSim(ctr_pts, myconfig.NUM_POINTS)
     elif args.target == "cobs":
         import forest_cobs
-        controller = forest_cobs.Lights(num_points)
+        controller = forest_cobs.Lights(myconfig.NUM_POINTS)
 
-    wave0 = wavesim.WaveSim(num_points, source=source_0, crossed_points=crossed_points)
-    wave1 = wavesim.WaveSim(num_points, source=source_1, crossed_points=crossed_points)
-    wave2 = wavesim.WaveSim(num_points, crossed_points=crossed_points)
-    sparkle = Sparkle(num_points)
+    wave0 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
+    wave1 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_1, crossed_points=crossed_points)
+    wave2 = wavesim.WaveSim(myconfig.NUM_POINTS, crossed_points=crossed_points)
+    sparkle = Sparkle(myconfig.NUM_POINTS)
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[num_points - 2] = wave2.u[num_points - 3] = 1
+    wave2.u[1] = wave2.u[2] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = 1
     wave2.set_velocity(0.1)
 
     locator = None

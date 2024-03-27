@@ -4,8 +4,10 @@ import numpy as np
 import cv2
 import math
 
+# This project
+import myconfig
+
 # Parameters
-num_points = 280
 cfg_velocity = 0.2  # Velocity of the wave
 time_step = 1  # Time step
 x_step = 1
@@ -115,7 +117,7 @@ class WaveSim:
 
 
 def main():
-    wavesim = WaveSim(num_points, source=source_0, crossed_points=crossed_points)
+    wavesim = WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
     wavesim.source_active = True
     img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
     t = 0
