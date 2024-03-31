@@ -9,6 +9,7 @@ import argparse
 import numpy as np
 
 # This project
+import forest_cobs
 import light_sim
 import myconfig
 import wavesim
@@ -20,7 +21,8 @@ from mycontroller import MyController
 # cable: 16 ft ea, *2 sections
 
 source_0 = 0
-source_1 = myconfig.NUM_POINTS - 1
+#source_1 = myconfig.NUM_POINTS - 1
+source_1 = int(myconfig.NUM_POINTS / 2)
 DAMPING_HIGH = 0.005
 DAMPING_MED = 0.001
 DAMPING_LOW = 0.0001
@@ -28,10 +30,10 @@ DAMPING_LOW = 0.0001
 num_channels = 3
 
 ctr_pts = light_sim.lightstring_original
-#crossed_points = light_sim.crossed_points_original
-crossed_points = []
+crossed_points = light_sim.crossed_points_original
+#crossed_points = []
 # ctr_pts = light_sim.lightstring_simple_2
-# crossed_points = light_sim.crossed_points_simple_2
+#crossed_points = light_sim.crossed_points_simple_2
 
 lights = np.full((myconfig.NUM_POINTS, num_channels), (0, 0, 0), dtype=np.uint8)
 
@@ -44,8 +46,9 @@ def args_parser():
     )
 
     parser.add_argument("target", type=str, choices=["sim", "cobs"])
-    # parser.add_argument('--sim', action='store_true')
-    # parser.add_argument('--cobs', action='store_true')
+    parser.add_argument('--test', type=str)
+
+    # parser.add_argument('--two', action='store_true')
     return parser.parse_args()
 
 
@@ -88,6 +91,24 @@ class Sparkle:
             lights[flash] = np.array((255, 255, 255)) - (1 - intensity)
 
 
+def test_pattern(pattern, lights):
+    if pattern == "white":
+        lights[..., 0] = 255
+        lights[..., 1] = 255
+        lights[..., 2] = 255
+    if pattern == "red":
+        lights[..., 0] = 0
+        lights[..., 1] = 0
+        lights[..., 2] = 255
+    if pattern == "green":
+        lights[..., 0] = 0
+        lights[..., 1] = 255
+        lights[..., 2] = 0
+    if pattern == "blue":
+        lights[..., 0] = 255
+        lights[..., 1] = 0
+        lights[..., 2] = 0
+
 def move_locator(locator, amount):
     if locator is None:
         return None
@@ -106,7 +127,6 @@ def main():
     if args.target == "sim":
         controller = light_sim.LightsSim(ctr_pts, myconfig.NUM_POINTS)
     elif args.target == "cobs":
-        import forest_cobs
         controller = forest_cobs.Lights(myconfig.NUM_POINTS)
 
     wave0 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
@@ -116,8 +136,8 @@ def main():
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = 1
-    wave2.set_velocity(0.1)
+    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = 1
+    wave2.set_velocity(0.2)
 
     locator = None
 
@@ -133,6 +153,8 @@ def main():
         wave2.update_wave(t)
         light_waves(lights, wave0, wave1, wave2)
         sparkle.update_lights(lights, wave0, wave1, wave2)
+
+        test_pattern(args.test, lights)
 
         # Draw everything simulated
         controller.draw(lights, locator)

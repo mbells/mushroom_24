@@ -1,6 +1,3 @@
 
 - initial impluse when touch changes (both low and high)
-
-## Arduino
-- convert to int arithmetic
-- create Arduino sketch
+- secret animation better than sparkle for coordinated touch pattern

@@ -8,7 +8,7 @@ import math
 import myconfig
 
 # Parameters
-cfg_velocity = 0.2  # Velocity of the wave
+cfg_velocity = 0.8  # Velocity of the wave
 time_step = 1  # Time step
 x_step = 1
 cfg_damping_factor = 0.0001  # Damping factor
@@ -18,9 +18,9 @@ width = 1000
 height = 250
 num_channels = 3
 
-crossed_points = []
-# crossed_points = [(40, 100)]
-# crossed_points = [(119, 214)]
+#crossed_points = []
+#crossed_points = [(40, 100)]
+crossed_points = [(119, 214)]
 
 # source_0 = int(num_points / 2)
 source_0 = 0
@@ -66,8 +66,9 @@ class WaveSim:
 
         # When crosses are defined, these affect each other:
         for a, b in self.crossed_points:
-            avg = np.mean([u_next[a], u_next[b]])
-            u_next[a] = u_next[b] = avg
+            #avg = np.mean([u_next[a], u_next[b]])
+            superpos = (u_next[a] + u_next[b]) / 2
+            u_next[a] = u_next[b] = superpos
 
         # if np.isclose(u[self.source], 0, atol=0.01):
         """

@@ -84,7 +84,7 @@ class LightsSim(MyController):
         if locator is not None:
             x, y = np.intp((self.lights_x[locator], height - self.lights_y[locator]))
             # print(x,y)
-            cv2.circle(iself.mg, (x, y), radius=6, color=(255, 255, 255), thickness=2)
+            cv2.circle(self.img, (x, y), radius=6, color=(255, 255, 255), thickness=2)
 
         cv2.imshow("lights", self.img)
 
