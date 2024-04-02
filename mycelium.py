@@ -20,9 +20,6 @@ from mycontroller import MyController, MyModel
 # 28 in high
 # cable: 16 ft ea, *2 sections
 
-source_0 = 0
-# source_1 = myconfig.NUM_POINTS - 1
-source_1 = int(myconfig.NUM_POINTS / 2)
 DAMPING_HIGH = 0.005
 DAMPING_MED = 0.001
 DAMPING_LOW = 0.0001
@@ -30,12 +27,7 @@ DAMPING_LOW = 0.0001
 num_channels = 3
 
 ctr_pts = light_sim.lightstring_original
-crossed_points = light_sim.crossed_points_original
-# crossed_points = []
 # ctr_pts = light_sim.lightstring_simple_2
-# crossed_points = light_sim.crossed_points_simple_2
-
-lights = np.full((myconfig.NUM_POINTS, num_channels), (0, 0, 0), dtype=np.uint8)
 
 
 def args_parser():
@@ -45,7 +37,7 @@ def args_parser():
         epilog="See https://github.com/mbells/mushroom_24",
     )
 
-    # parser.add_argument("target", type=str, choices=["sim", "cobs"])
+    parser.add_argument("target", type=str, choices=["one", "two"])
 
     parser.add_argument("--cobs", action="store_true")
     parser.add_argument("--test", type=str)
@@ -127,6 +119,19 @@ def move_locator(locator, amount):
 def main():
     args = args_parser()
 
+    if args.target == "one":
+        myconfig.NUM_POINTS = 140
+        crossed_points = myconfig.crossed_points_1
+    elif args.target == "two":
+        myconfig.NUM_POINTS = 280
+        crossed_points = myconfig.crossed_points_2
+
+    source_0 = 0
+    source_1 = int(myconfig.NUM_POINTS / 2)
+
+    # crossed_points = []
+
+    lights = np.full((myconfig.NUM_POINTS, num_channels), (0, 0, 0), dtype=np.uint8)
     model = MyModel()
     controller = light_sim.LightsSim(model, ctr_pts, myconfig.NUM_POINTS)
 

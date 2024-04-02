@@ -42,7 +42,12 @@ class Lights(MyController):
         super().__init__(model)
         self.num_points = num_points
         self.lights_1 = LightCobs(0, 140, arduino_serial_1)
-        self.lights_2 = LightCobs(140, 140, arduino_serial_2)
+        two_len = 140 if num_points == 280 else 0
+        self.lights_2 = LightCobs(140, two_len, arduino_serial_2)
+        if arduino_serial_1 is None:
+            print("WARNING: arduino_serial_1 is None")
+        if arduino_serial_2 is None:
+            print("WARNING: arduino_serial_2 is None")
 
     def destroy(self):
         pass

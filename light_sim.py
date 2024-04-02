@@ -66,6 +66,7 @@ crossed_points_simple_2 = [(70, 210)]
 class LightsSim(MyController):
     def __init__(self, model, ctr_pts, num_points):
         super().__init__(model)
+        self.num_points = num_points
         (self.lights_x, self.lights_y) = self.interpolate_points(ctr_pts, num_points)
 
         self.img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
@@ -76,7 +77,7 @@ class LightsSim(MyController):
     def draw(self, lights, locator):
         self.img *= 0
 
-        for i in range(num_points):
+        for i in range(self.num_points):
             x, y = np.intp((self.lights_x[i], height - self.lights_y[i]))
             c = lights[i].tolist()
             cv2.circle(self.img, (x, y), radius=4, color=c, thickness=-1)
@@ -92,7 +93,7 @@ class LightsSim(MyController):
         x = control_pts[:, 0]
         y = control_pts[:, 1]
         tck, u = interpolate.splprep([x, y], k=3, s=0)
-        u = np.linspace(0, 1, num=num_points, endpoint=True)
+        u = np.linspace(0, 1, num=self.num_points, endpoint=True)
         out = interpolate.splev(u, tck)
         return out
 
