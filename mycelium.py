@@ -151,15 +151,23 @@ def main():
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[
-        myconfig.NUM_POINTS - 3
-    ] = wave2.u[myconfig.NUM_POINTS - 4] = 1
     wave2.set_velocity(0.2)
 
     locator = None
 
     t = 0
     while True:
+
+        # Every so often, reset the simulation of wave2 (background)
+        if t == 10000:
+            print("Resetting background wave")
+            t = 0
+        if t == 0:
+            wave2.u *= 0
+            wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[
+                myconfig.NUM_POINTS - 3
+            ] = wave2.u[myconfig.NUM_POINTS - 4] = 3
+
         # Upadate simulation state
         t += 1
 
