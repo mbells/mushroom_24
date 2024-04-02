@@ -2,7 +2,13 @@
 """
 The mycelium art display.
 
-Can be drawn on an LED string or on simulated on the display.
+Outputs simulation to display and optionally write to serial.
+
+Keys:
+- q - quit
+- 1, 2 - toggle inputs
+- l - locator
+- Up, Dn, PgUp, PgDown - move locator
 """
 
 import argparse
@@ -33,7 +39,8 @@ ctr_pts = light_sim.lightstring_original
 def args_parser():
     parser = argparse.ArgumentParser(
         # prog='mycelium',
-        description="Runs the mycelium art project.",
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="See https://github.com/mbells/mushroom_24",
     )
 
@@ -155,11 +162,13 @@ def main():
 
     locator = None
 
+    print(__doc__)
+
     t = 0
     while True:
 
         # Every so often, reset the simulation of wave2 (background)
-        if t == 10000:
+        if t == 5000:
             print("Resetting background wave")
             t = 0
         if t == 0:
@@ -198,13 +207,13 @@ def main():
                 locator = None
         elif key == -1:
             pass
-        elif key == 151 or key == 82:  # Up
+        elif key in {151, 82, 2490368}:  # Up
             locator = move_locator(locator, 1)
-        elif key == 154 or key == 85:  # PgUp
+        elif key in {154, 85, 2162688}:  # PgUp
             locator = move_locator(locator, 10)
-        elif key == 153 or key == 84:  # Down
+        elif key in {153, 84, 2621440}:  # Down
             locator = move_locator(locator, -1)
-        elif key == 155 or key == 86:  # PageDown
+        elif key in {155, 86, 2228224}:  # PageDown
             locator = move_locator(locator, -10)
         else:
             print(f"Unknown key {key}")

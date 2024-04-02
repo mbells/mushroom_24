@@ -98,7 +98,7 @@ class LightsSim(MyController):
         return out
 
     def read_key(self):
-        key = cv2.waitKey(1)
+        key = cv2.waitKeyEx(1)
 
         if key == ord("1"):
             self.model.toggle(0)
