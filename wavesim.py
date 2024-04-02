@@ -18,8 +18,8 @@ width = 1000
 height = 250
 num_channels = 3
 
-#crossed_points = []
-#crossed_points = [(40, 100)]
+# crossed_points = []
+# crossed_points = [(40, 100)]
 crossed_points = [(119, 214)]
 
 # source_0 = int(num_points / 2)
@@ -66,7 +66,7 @@ class WaveSim:
 
         # When crosses are defined, these affect each other:
         for a, b in self.crossed_points:
-            #avg = np.mean([u_next[a], u_next[b]])
+            # avg = np.mean([u_next[a], u_next[b]])
             superpos = (u_next[a] + u_next[b]) / 2
             u_next[a] = u_next[b] = superpos
 
@@ -118,7 +118,9 @@ class WaveSim:
 
 
 def main():
-    wavesim = WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
+    wavesim = WaveSim(
+        myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points
+    )
     wavesim.source_active = True
     img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
     t = 0

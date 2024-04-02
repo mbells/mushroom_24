@@ -7,6 +7,7 @@ from cobs import cobs
 # This project
 from mycontroller import MyController
 
+
 class LightCobs:
     """Represents a subset of the lights that is to be written to the serial interface
     with the COBS protocol."""
@@ -17,18 +18,16 @@ class LightCobs:
         self.buffer = bytearray(3 * num_points)
         self.arduino_serial = port
 
-
     def draw(self, lights, locator):
         for pixel in range(self.num_points):
-            self.buffer[3 * pixel] = lights[self.offset+pixel][0]  # B
-            self.buffer[3 * pixel + 1] = lights[self.offset+pixel][2]  # R
-            self.buffer[3 * pixel + 2] = lights[self.offset+pixel][1]  # G
+            self.buffer[3 * pixel] = lights[self.offset + pixel][0]  # B
+            self.buffer[3 * pixel + 1] = lights[self.offset + pixel][2]  # R
+            self.buffer[3 * pixel + 2] = lights[self.offset + pixel][1]  # G
 
         if locator is not None:
             self.set_pixel(locator, color=(255, 255, 255))
 
         self.write_to_strip()
-
 
     def set_pixel(self, pixel, color):
         pixel -= self.offset

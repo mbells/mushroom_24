@@ -21,7 +21,7 @@ from mycontroller import MyController, MyModel
 # cable: 16 ft ea, *2 sections
 
 source_0 = 0
-#source_1 = myconfig.NUM_POINTS - 1
+# source_1 = myconfig.NUM_POINTS - 1
 source_1 = int(myconfig.NUM_POINTS / 2)
 DAMPING_HIGH = 0.005
 DAMPING_MED = 0.001
@@ -31,9 +31,9 @@ num_channels = 3
 
 ctr_pts = light_sim.lightstring_original
 crossed_points = light_sim.crossed_points_original
-#crossed_points = []
+# crossed_points = []
 # ctr_pts = light_sim.lightstring_simple_2
-#crossed_points = light_sim.crossed_points_simple_2
+# crossed_points = light_sim.crossed_points_simple_2
 
 lights = np.full((myconfig.NUM_POINTS, num_channels), (0, 0, 0), dtype=np.uint8)
 
@@ -47,8 +47,8 @@ def args_parser():
 
     # parser.add_argument("target", type=str, choices=["sim", "cobs"])
 
-    parser.add_argument('--cobs', action='store_true')
-    parser.add_argument('--test', type=str)
+    parser.add_argument("--cobs", action="store_true")
+    parser.add_argument("--test", type=str)
 
     # parser.add_argument('--two', action='store_true')
     return parser.parse_args()
@@ -111,6 +111,7 @@ def test_pattern(pattern, lights):
         lights[..., 1] = 0
         lights[..., 2] = 0
 
+
 def move_locator(locator, amount):
     if locator is None:
         return None
@@ -134,14 +135,20 @@ def main():
     else:
         cobs = MyController(model)
 
-    wave0 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
-    wave1 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_1, crossed_points=crossed_points)
+    wave0 = wavesim.WaveSim(
+        myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points
+    )
+    wave1 = wavesim.WaveSim(
+        myconfig.NUM_POINTS, source=source_1, crossed_points=crossed_points
+    )
     wave2 = wavesim.WaveSim(myconfig.NUM_POINTS, crossed_points=crossed_points)
     sparkle = Sparkle(myconfig.NUM_POINTS)
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = wave2.u[myconfig.NUM_POINTS - 4] = 1
+    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[
+        myconfig.NUM_POINTS - 3
+    ] = wave2.u[myconfig.NUM_POINTS - 4] = 1
     wave2.set_velocity(0.2)
 
     locator = None
@@ -190,7 +197,10 @@ def main():
             print(f"Unknown key {key}")
 
         cobs.process_inputs()
-        if wave0.source_active != model.sensors[0] or wave1.source_active != model.sensors[1]:
+        if (
+            wave0.source_active != model.sensors[0]
+            or wave1.source_active != model.sensors[1]
+        ):
             print("input", model.sensors[0], model.sensors[1])
             wave0.source_active = model.sensors[0]
             wave1.source_active = model.sensors[1]

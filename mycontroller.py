@@ -1,6 +1,6 @@
 class MyModel:
     """Models the input sensors.
-    
+
     These are just touch sensitive panels.
     Broken out so that this can be changed from either the simulator panel or the real sensors.
     """
@@ -30,6 +30,6 @@ class MyController:
 
     def process_inputs(self) -> None:
         pass
-    
+
     def read_key(self):
         pass

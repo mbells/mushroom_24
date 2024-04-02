@@ -25,9 +25,9 @@ from light_cobs import LightCobs
 
 
 arduino_serial_1 = None
-#arduino_serial_1 = serial.Serial("COM4", 115200)
+# arduino_serial_1 = serial.Serial("COM4", 115200)
 arduino_serial_2 = None
-#arduino_serial_2 = serial.Serial("COM5", 115200)
+# arduino_serial_2 = serial.Serial("COM5", 115200)
 
 
 def read_state(inputs):
@@ -68,6 +68,7 @@ def update_changed_times(state, previous_state):
         if changed & state & (1 << which_sensor):
             changed_times[which_sensor] = time.time()
 
+
 ### Effects ###
 
 NUM_PIXELS = myconfig.NUM_POINTS
@@ -98,7 +99,6 @@ def draw_arm(pt, color, fraction):
         c = (color[0] >> offset, color[1] >> offset, color[2] >> offset)
         lights.set_pixel(pt - offset, c)
         lights.set_pixel(pt + offset, c)
-
 
 
 def update_LEDs(state):
