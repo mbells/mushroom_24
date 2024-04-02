@@ -13,7 +13,7 @@ import forest_cobs
 import light_sim
 import myconfig
 import wavesim
-from mycontroller import MyController
+from mycontroller import MyController, MyModel
 
 
 # 12 ft wide, 10 used (120 in)
@@ -45,7 +45,9 @@ def args_parser():
         epilog="See https://github.com/mbells/mushroom_24",
     )
 
-    parser.add_argument("target", type=str, choices=["sim", "cobs"])
+    # parser.add_argument("target", type=str, choices=["sim", "cobs"])
+
+    parser.add_argument('--cobs', action='store_true')
     parser.add_argument('--test', type=str)
 
     # parser.add_argument('--two', action='store_true')
@@ -124,10 +126,13 @@ def move_locator(locator, amount):
 def main():
     args = args_parser()
 
-    if args.target == "sim":
-        controller = light_sim.LightsSim(ctr_pts, myconfig.NUM_POINTS)
-    elif args.target == "cobs":
-        controller = forest_cobs.Lights(myconfig.NUM_POINTS)
+    model = MyModel()
+    controller = light_sim.LightsSim(model, ctr_pts, myconfig.NUM_POINTS)
+
+    if args.cobs:
+        cobs = forest_cobs.Lights(model, myconfig.NUM_POINTS)
+    else:
+        cobs = MyController(model)
 
     wave0 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_0, crossed_points=crossed_points)
     wave1 = wavesim.WaveSim(myconfig.NUM_POINTS, source=source_1, crossed_points=crossed_points)
@@ -158,6 +163,7 @@ def main():
 
         # Draw everything simulated
         controller.draw(lights, locator)
+        cobs.draw(lights, locator)
 
         # Respond to input
         key = controller.read_key()
@@ -183,11 +189,11 @@ def main():
         else:
             print(f"Unknown key {key}")
 
-        inputs = controller.get_inputs()
-        if wave0.source_active != inputs[0] or wave1.source_active != inputs[1]:
-            print("input", inputs[0], inputs[1])
-            wave0.source_active = inputs[0]
-            wave1.source_active = inputs[1]
+        cobs.process_inputs()
+        if wave0.source_active != model.sensors[0] or wave1.source_active != model.sensors[1]:
+            print("input", model.sensors[0], model.sensors[1])
+            wave0.source_active = model.sensors[0]
+            wave1.source_active = model.sensors[1]
 
         # Adjust simulation parameters...
         if wave0.source_active and wave1.source_active:

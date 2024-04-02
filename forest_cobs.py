@@ -10,7 +10,6 @@
 #   set_pixel(pixel, color)              pixel is an index, color is (r, g, b)
 #   write_to_strip()                     sends the color array to the strip
 
-import cv2
 import numpy as np
 import serial
 import time
@@ -30,11 +29,6 @@ arduino_serial_1 = None
 arduino_serial_2 = None
 #arduino_serial_2 = serial.Serial("COM5", 115200)
 
-width = 1000
-height = 250
-num_channels = 3
-
-
 
 def read_state(inputs):
     while arduino_serial_1 and arduino_serial_1.in_waiting:
@@ -44,12 +38,11 @@ def read_state(inputs):
 
 
 class Lights(MyController):
-    def __init__(self, num_points):
+    def __init__(self, model, num_points):
+        super().__init__(model)
         self.num_points = num_points
-        self.inputs = [False, False]
         self.lights_1 = LightCobs(0, 140, arduino_serial_1)
         self.lights_2 = LightCobs(140, 140, arduino_serial_2)
-        self.img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
 
     def destroy(self):
         pass
@@ -58,25 +51,8 @@ class Lights(MyController):
         self.lights_1.draw(lights, locator)
         self.lights_2.draw(lights, locator)
 
-        # Fake image required so that input is processed
-        cv2.imshow("lights", self.img)
-
-    def get_inputs(self):
-        self.inputs = read_state(self.inputs)
-        return self.inputs
-
-
-    def read_key(self):
-        key = cv2.waitKey(1)
-
-        if key == ord("1"):
-            self.inputs[0] = not self.inputs[0]
-            key = -1
-        elif key == ord("2"):
-            self.inputs[1] = not self.inputs[1]
-            key = -1
-
-        return key
+    def process_inputs(self):
+        self.model.update(read_state(self.model.sensors))
 
 
 ### Keep track of when the state last changed ###

@@ -64,11 +64,11 @@ crossed_points_simple_2 = [(70, 210)]
 
 
 class LightsSim(MyController):
-    def __init__(self, ctr_pts, num_points):
+    def __init__(self, model, ctr_pts, num_points):
+        super().__init__(model)
         (self.lights_x, self.lights_y) = self.interpolate_points(ctr_pts, num_points)
 
         self.img = np.full((height, width, num_channels), (0, 0, 0), dtype=np.uint8)
-        self.inputs = [False, False]
 
     def destroy(self):
         cv2.destroyAllWindows()
@@ -88,9 +88,6 @@ class LightsSim(MyController):
 
         cv2.imshow("lights", self.img)
 
-    def get_inputs(self):
-        return self.inputs
-
     def interpolate_points(self, control_pts, num_points):
         x = control_pts[:, 0]
         y = control_pts[:, 1]
@@ -103,10 +100,10 @@ class LightsSim(MyController):
         key = cv2.waitKey(1)
 
         if key == ord("1"):
-            self.inputs[0] = not self.inputs[0]
+            self.model.toggle(0)
             key = -1
         elif key == ord("2"):
-            self.inputs[1] = not self.inputs[1]
+            self.model.toggle(1)
             key = -1
 
         return key
