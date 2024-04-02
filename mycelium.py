@@ -136,7 +136,7 @@ def main():
 
     # Background wave
     wave2.damping_factor = 0
-    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = 1
+    wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[myconfig.NUM_POINTS - 3] = wave2.u[myconfig.NUM_POINTS - 4] = 1
     wave2.set_velocity(0.2)
 
     locator = None

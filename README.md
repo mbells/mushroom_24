@@ -47,6 +47,10 @@ $$
 
 where $ s = { {\Delta t^2} \over {\Delta x^2} } $
 
+## Testing
+
+  pytest
+
 ## References
 - https://en.wikipedia.org/wiki/Wave_equation
 - https://en.wikipedia.org/wiki/One-way_wave_equation
