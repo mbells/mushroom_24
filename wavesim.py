@@ -8,7 +8,7 @@ import math
 import myconfig
 
 # Parameters
-cfg_velocity = 0.8  # Velocity of the wave
+cfg_velocity = 0.6  # Velocity of the wave
 time_step = 1  # Time step
 x_step = 1
 cfg_damping_factor = 0.0001  # Damping factor

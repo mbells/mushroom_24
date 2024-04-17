@@ -41,7 +41,7 @@ class Lights(MyController):
     def __init__(self, model, num_points):
         super().__init__(model)
         self.num_points = num_points
-        self.lights_1 = LightCobs(0, 140, arduino_serial_1)
+        self.lights_1 = LightCobs(0, num_points, arduino_serial_1)
         two_len = 140 if num_points == 280 else 0
         self.lights_2 = LightCobs(140, two_len, arduino_serial_2)
         if arduino_serial_1 is None:

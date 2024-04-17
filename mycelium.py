@@ -32,8 +32,10 @@ DAMPING_LOW = 0.0001
 
 num_channels = 3
 
-ctr_pts = light_sim.lightstring_original
+# ctr_pts = light_sim.lightstring_original
 # ctr_pts = light_sim.lightstring_simple_2
+ctr_pts = light_sim.lightstring_simple_final
+crossed_points = light_sim.crossed_points_simple_final
 
 
 def args_parser():
@@ -54,7 +56,7 @@ def args_parser():
 
 
 def light_waves(lights, wave0, wave1, wave2):
-    background = 150 * wave2.u
+    background = 50 * wave2.u
     # wave2.u *=0
     r = np.clip(0 + 150 * wave0.u + background, 0, 255)
     g = np.clip(0 + 150 * wave1.u + background, 0, 255)
@@ -127,14 +129,14 @@ def main():
     args = args_parser()
 
     if args.target == "one":
-        myconfig.NUM_POINTS = 140
+        myconfig.NUM_POINTS = 100
         crossed_points = myconfig.crossed_points_1
     elif args.target == "two":
         myconfig.NUM_POINTS = 280
         crossed_points = myconfig.crossed_points_2
 
-    source_0 = 0
-    source_1 = int(myconfig.NUM_POINTS / 2)
+    source_0 = myconfig.source_0
+    source_1 = myconfig.source_1
 
     # crossed_points = []
 

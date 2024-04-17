@@ -2,6 +2,8 @@
 Write lights to the serial interface COBS encoded.
 """
 
+import numpy as np
+
 from cobs import cobs
 
 # This project
@@ -18,11 +20,18 @@ class LightCobs:
         self.buffer = bytearray(3 * num_points)
         self.arduino_serial = port
 
+        gamma = 4
+        self.gamma_cor = bytearray(256)
+        for i in range(256):
+            self.gamma_cor[i] = np.clip(int((i / 255) ** gamma * 255), 0, 255)
+            #print(self.gamma_cor[i])
+
     def draw(self, lights, locator):
         for pixel in range(self.num_points):
-            self.buffer[3 * pixel] = lights[self.offset + pixel][0]  # B
-            self.buffer[3 * pixel + 1] = lights[self.offset + pixel][2]  # R
-            self.buffer[3 * pixel + 2] = lights[self.offset + pixel][1]  # G
+            p = self.num_points - pixel - 1
+            self.buffer[3 * p] = lights[self.offset + pixel][2]  # R
+            self.buffer[3 * p + 1] = lights[self.offset + pixel][1]  # G
+            self.buffer[3 * p + 2] = lights[self.offset + pixel][0]  # B
 
         if locator is not None:
             self.set_pixel(locator, color=(255, 255, 255))
@@ -33,9 +42,10 @@ class LightCobs:
         pixel -= self.offset
         if pixel < 0 or pixel >= self.num_point:
             return
-        self.buffer[3 * pixel] = color[0]  # B
-        self.buffer[3 * pixel + 1] = color[1]  # R
-        self.buffer[3 * pixel + 2] = color[2]  # G
+        p = self.num_points - p
+        self.buffer[3 * p] = color[2]  # R
+        self.buffer[3 * p + 1] = color[1]  # G
+        self.buffer[3 * p + 2] = color[0]  # B
 
     def write_to_strip(self):
         buffer = cobs.encode(self.buffer) + b"\0"

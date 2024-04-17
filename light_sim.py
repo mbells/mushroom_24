@@ -62,6 +62,25 @@ lightstring_simple_2 = np.array(
 )
 crossed_points_simple_2 = [(70, 210)]
 
+lightstring_simple_final = np.array(
+    [
+        (0, 250),
+        (125, 125),
+        (250, 250),
+        (300, 200),
+        (350, 250),
+        (400, 150),
+        (450, 250),
+        (500, 50),
+        (550, 250),
+        (600, 150),
+        (700, 250),
+        (750, 200),
+        (800, 50),
+    ]
+)
+crossed_points_simple_final = []
+
 
 class LightsSim(MyController):
     def __init__(self, model, ctr_pts, num_points):
