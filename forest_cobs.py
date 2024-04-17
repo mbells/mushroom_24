@@ -45,9 +45,13 @@ class Lights(MyController):
         two_len = 140 if num_points == 280 else 0
         self.lights_2 = LightCobs(140, two_len, arduino_serial_2)
         if arduino_serial_1 is None:
-            print("WARNING: arduino_serial_1 is None, uncomment below CHANGEME to activate")
+            print(
+                "WARNING: arduino_serial_1 is None, uncomment below CHANGEME to activate"
+            )
         if arduino_serial_2 is None:
-            print("WARNING: arduino_serial_2 is None, uncomment below CHANGEME to activate")
+            print(
+                "WARNING: arduino_serial_2 is None, uncomment below CHANGEME to activate"
+            )
 
     def destroy(self):
         pass

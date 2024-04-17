@@ -175,9 +175,9 @@ def main():
             t = 0
         if t == 0:
             wave2.u *= 0
-            wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = wave2.u[
-                myconfig.NUM_POINTS - 3
-            ] = wave2.u[myconfig.NUM_POINTS - 4] = 3
+            wave2.u[1] = wave2.u[2] = wave2.u[3] = wave2.u[myconfig.NUM_POINTS - 2] = (
+                wave2.u[myconfig.NUM_POINTS - 3]
+            ) = wave2.u[myconfig.NUM_POINTS - 4] = 3
 
         # Upadate simulation state
         t += 1

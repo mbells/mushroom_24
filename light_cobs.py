@@ -24,7 +24,7 @@ class LightCobs:
         self.gamma_cor = bytearray(256)
         for i in range(256):
             self.gamma_cor[i] = np.clip(int((i / 255) ** gamma * 255), 0, 255)
-            #print(self.gamma_cor[i])
+            # print(self.gamma_cor[i])
 
     def draw(self, lights, locator):
         for pixel in range(self.num_points):
